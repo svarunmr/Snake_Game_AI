@@ -13,13 +13,19 @@
 #include "xymap.h"
 
 /* Key aliases to match termbox constants */
-#define KEY_UP    TB_KEY_ARROW_UP
-#define KEY_DOWN  TB_KEY_ARROW_DOWN
-#define KEY_LEFT  TB_KEY_ARROW_LEFT
+#define KEY_UP TB_KEY_ARROW_UP
+#define KEY_DOWN TB_KEY_ARROW_DOWN
+#define KEY_LEFT TB_KEY_ARROW_LEFT
 #define KEY_RIGHT TB_KEY_ARROW_RIGHT
-#define ERR       (-1)
+#define ERR (-1)
 
-enum modes { NORMAL, ARCADE, AUTOPILOT, SCREENSAVER };
+enum modes
+{
+  NORMAL,
+  ARCADE,
+  AUTOPILOT,
+  SCREENSAVER
+};
 
 static int direction = East;
 static int maxX = 0;
@@ -41,7 +47,8 @@ int check_junk_pos(XYMap *blocksTaken, int x, int y);
 void print_help();
 int check_path(Stack **path);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
   XYMap *blocksTaken = NULL;
   Snake *snake = NULL;
@@ -66,7 +73,8 @@ int main(int argc, char *argv[]) {
 
   int maxBlocks = maxX * maxY;
   int junkCount = 0;
-  do { // This loop goes forever if the option "screensaver" is given.
+  do
+  { // This loop goes forever if the option "screensaver" is given.
 
     draw_walls();
     //  Used to know where the body of the snake and the junk are,
@@ -81,12 +89,15 @@ int main(int argc, char *argv[]) {
     snake->grow = 1;
 
     // Self explainatory block (I hope)
-    if (junk) {
+    if (junk)
+    {
       junkList = list_create();
       int maxJunk = (maxX * maxY) * junk / 100;
-      for (int i = 0; i < maxJunk; i++) {
+      for (int i = 0; i < maxJunk; i++)
+      {
         int jx, jy;
-        do {
+        do
+        {
 
           jx = (rand() % (maxX - 2)) + 1;
           jy = (rand() % (maxY - 2)) + 1;
@@ -103,12 +114,15 @@ int main(int argc, char *argv[]) {
     rand_pos_food(&food, blocksTaken, maxX, maxY);
 
     // The game loop
-    while (1) {
+    while (1)
+    {
       // Get a new path to follow if the autopilot or the screensaver are active
       if ((selectedMode == AUTOPILOT || selectedMode == SCREENSAVER) &&
-          !check_path(&path)) {
+          !check_path(&path))
+      {
 
-        switch (selectedAlgorithm) {
+        switch (selectedAlgorithm)
+        {
         case BASIC:
           path = basic_path_search(blocksTaken, snake, maxX, maxY, food);
           break;
@@ -120,7 +134,8 @@ int main(int argc, char *argv[]) {
           break;
         }
 
-        if (path == NULL && snake->length > 1) {
+        if (path == NULL && snake->length > 1)
+        {
           // if there is no path found then mark the direction to which the
           // snake was headed and can follow it to die
           if ((snake->head->x - (snake->head->next->x + 1)) == 0)
@@ -144,8 +159,10 @@ int main(int argc, char *argv[]) {
       }
 
       // Pause game
-      if (c == ' ') {
-        do {
+      if (c == ' ')
+      {
+        do
+        {
           struct tb_event pause_ev;
           tb_poll_event(&pause_ev);
           if (pause_ev.type == TB_EVENT_KEY)
@@ -154,9 +171,12 @@ int main(int argc, char *argv[]) {
             c = ERR;
         } while (c != ' ');
         c = ERR;
-      } else if (selectedMode == SCREENSAVER || selectedMode == AUTOPILOT) {
+      }
+      else if (selectedMode == SCREENSAVER || selectedMode == AUTOPILOT)
+      {
         // control speed
-        switch (c) {
+        switch (c)
+        {
         case '+':
         case '=':
           if (speed - 10000 > 0)
@@ -172,13 +192,16 @@ int main(int argc, char *argv[]) {
         }
       }
 
-      if (path != NULL) {
+      if (path != NULL)
+      {
 
         Point *point = stack_pop(path);
         update_position_autopilot(snake, blocksTaken, &food, point->x, point->y,
                                   maxX, maxY);
         free(point);
-      } else {
+      }
+      else
+      {
         // If the autopilot is on and there is no path to follow then let the
         // snake die.
         if (!(selectedMode == AUTOPILOT || selectedMode == SCREENSAVER))
@@ -187,12 +210,15 @@ int main(int argc, char *argv[]) {
       }
 
       // For the screensaver mode we need to break the loop
-      if (selectedMode == SCREENSAVER) {
+      if (selectedMode == SCREENSAVER)
+      {
         if (controlLastPoint.x == snake->head->x &&
             controlLastPoint.y == snake->head->y &&
-            snake->length == controlSnakeSize) {
+            snake->length == controlSnakeSize)
+        {
           loops++;
-          if (loops > 1) {
+          if (loops > 1)
+          {
             stack_free(path);
             path = a_star_search(blocksTaken, snake, maxX, maxY, food, 1);
           }
@@ -201,18 +227,22 @@ int main(int argc, char *argv[]) {
           break;
       }
 
-      if (snake->head->x == food.x && snake->head->y == food.y) {
-        if (selectedMode == AUTOPILOT || selectedMode == SCREENSAVER) {
+      if (snake->head->x == food.x && snake->head->y == food.y)
+      {
+        if (selectedMode == AUTOPILOT || selectedMode == SCREENSAVER)
+        {
           stack_free(path);
           path = NULL;
         }
-        if (junkCount + snake->length < maxBlocks) {
+        if (junkCount + snake->length < maxBlocks)
+        {
           controlLastPoint = food;
           controlSnakeSize = snake->length;
           loops = 0;
           rand_pos_food(&food, blocksTaken, maxX, maxY);
-
-        } else {
+        }
+        else
+        {
           food.x = -1;
           food.y = -1;
         }
@@ -220,10 +250,12 @@ int main(int argc, char *argv[]) {
         if (selectedMode == ARCADE)
           speed = speed - 2000;
       }
-      if (snake->collision || c == 'q') {
+      if (snake->collision || c == 'q')
+      {
         break;
       }
-      if (selectedMode == SCREENSAVER && c != ERR) {
+      if (selectedMode == SCREENSAVER && c != ERR)
+      {
         c = 'q';
         break;
       }
@@ -250,20 +282,25 @@ int main(int argc, char *argv[]) {
   tb_shutdown();
 }
 
-int check_path(Stack **path) {
+int check_path(Stack **path)
+{
 
-  if (*path != NULL) {
-    if ((*path)->last == NULL) {
+  if (*path != NULL)
+  {
+    if ((*path)->last == NULL)
+    {
       stack_free(*path);
       *path = NULL;
       return 0;
-    } else
+    }
+    else
       return 1;
   }
   return 0;
 }
 
-int check_junk_pos(XYMap *blocksTaken, int x, int y) {
+int check_junk_pos(XYMap *blocksTaken, int x, int y)
+{
 
   if (xymap_marked(blocksTaken, x, y) ||
       (y == maxY / 2 && (x > maxX / 4 && y < maxX * 3 / 4)))
@@ -274,17 +311,22 @@ int check_junk_pos(XYMap *blocksTaken, int x, int y) {
   //    ▀   ▀
   //      ▀
 
-  for (int i = -1; i < 2; i += 2) {
+  for (int i = -1; i < 2; i += 2)
+  {
 
-    for (int j = -1; j < 2; j += 2) {
-      if (xymap_marked(blocksTaken, x + i, y + j)) {
+    for (int j = -1; j < 2; j += 2)
+    {
+      if (xymap_marked(blocksTaken, x + i, y + j))
+      {
 
         count++;
 
-        if (xymap_marked(blocksTaken, x + i * 2, y)) {
+        if (xymap_marked(blocksTaken, x + i * 2, y))
+        {
           count++;
         }
-        if (xymap_marked(blocksTaken, x, y + j * 2)) {
+        if (xymap_marked(blocksTaken, x, y + j * 2))
+        {
           count++;
         }
       }
@@ -294,8 +336,10 @@ int check_junk_pos(XYMap *blocksTaken, int x, int y) {
     return 0;
   return 1;
 }
-int get_direction(int c) {
-  switch (c) {
+int get_direction(int c)
+{
+  switch (c)
+  {
   case KEY_UP:
   case 'k':
   case 'K':
@@ -331,7 +375,8 @@ int get_direction(int c) {
   return -1;
 }
 
-void init_options(int argc, char *argv[]) {
+void init_options(int argc, char *argv[])
+{
   int op;
   int speedMult;
 
@@ -354,16 +399,19 @@ void init_options(int argc, char *argv[]) {
                                         // {"try-hard", 0, NULL, 0},
                                         {NULL, 0, NULL, 0}};
 
-  if (argc == 1) {
+  if (argc == 1)
+  {
     printf("You ran this program with no extra options,\n"
            "maybe it was intentional but you might have \n"
            "more fun trying the available options, run:\n"
-           "sssnake -h\n ");
+           "snakeai -h\n ");
   }
 
   while ((op = getopt_long(argc, argv, ":aSfs:j:hAzl:m:tx:y:1:2:", long_options,
-                           NULL)) != -1) {
-    switch (op) {
+                           NULL)) != -1)
+  {
+    switch (op)
+    {
     case 'A':
       selectedStyle = ASCII;
       printf("The -A / --ascii flag will be depricated at some point \n"
@@ -396,7 +444,8 @@ void init_options(int argc, char *argv[]) {
         selectedMode = SCREENSAVER;
       else if (strcmp(optarg, "normal") == 0)
         selectedMode = NORMAL;
-      else {
+      else
+      {
         printf("Incomplete or invalid argument for -m / --mode\n");
         exit(0);
       }
@@ -410,7 +459,8 @@ void init_options(int argc, char *argv[]) {
         selectedStyle = FANCY;
       else if (strcmp(optarg, "dots") == 0)
         selectedStyle = DOTS;
-      else {
+      else
+      {
         printf("Incomplete or invalid argument for -l / --look\n");
         exit(0);
       }
@@ -423,7 +473,8 @@ void init_options(int argc, char *argv[]) {
       break;
     case 's':
       speedMult = 21 - atoi(optarg);
-      if (speedMult > 0 && speedMult <= 20) {
+      if (speedMult > 0 && speedMult <= 20)
+      {
         speed = 10000 * speedMult;
       }
       break;
@@ -435,14 +486,16 @@ void init_options(int argc, char *argv[]) {
       break;
     case 'x':
       maxX = atoi(optarg);
-      if (maxX < 5) {
+      if (maxX < 5)
+      {
         printf("Minimum value of x supported is 5. \n");
         exit(0);
       }
       break;
     case 'y':
       maxY = atoi(optarg);
-      if (maxY < 5) {
+      if (maxY < 5)
+      {
         printf("Minimum value of y supported is 5. \n");
         exit(0);
       }
@@ -450,7 +503,8 @@ void init_options(int argc, char *argv[]) {
     case 1:
 
       selectedAlgorithm = atoi(optarg);
-      if (selectedAlgorithm > 2 || selectedAlgorithm < 1) {
+      if (selectedAlgorithm > 2 || selectedAlgorithm < 1)
+      {
         printf("Invalid algorithm!! \n");
         printf("Available algorithms:\n");
         printf("try-hard 1 for greedy 1.\n");
@@ -466,7 +520,8 @@ void init_options(int argc, char *argv[]) {
         set_short_path_algorithm(BFS);
       else if (strcmp(optarg, "asfixed") == 0)
         set_short_path_algorithm(ASTARFIXED);
-      else {
+      else
+      {
         printf("Incomplete or invalid argument for short-path\n");
         exit(0);
       }
@@ -486,10 +541,11 @@ void init_options(int argc, char *argv[]) {
   }
 }
 
-void print_help() {
+void print_help()
+{
 
   printf(
-      "Usage: sssnake [OPTIONS]\n"
+      "Usage: snakeai [OPTIONS]\n"
       "Options:\n"
 
       "  -m op, --mode=op     Mode in which the program will run. The "
@@ -550,8 +606,8 @@ void print_help() {
       "    Any key except +,- or spacebar     Quits the game.\n"
 
       "Try to run something like this :\n"
-      "sssnake -s 15 -j 5 -m screensaver\n"
+      "snakeai -s 15 -j 5 -m screensaver\n"
 
       "For bugs or new features go to : "
-      "https://github.com/AngelJumbo/sssnake\n");
+      "https://github.com/svarunmr/Snake_Game_AI\n");
 }

@@ -13,7 +13,8 @@ static int minX_, minY_, maxX_, maxY_;
 static int snakeSize = 0;
 
 int init_scr(int selStyle, int *maxX, int *maxY, short arcadeMode,
-             short dScore) {
+             short dScore)
+{
 
   selectedStyle = selStyle;
   drawScore = dScore;
@@ -22,7 +23,8 @@ int init_scr(int selStyle, int *maxX, int *maxY, short arcadeMode,
   minX_ = 0;
   minY_ = 0;
 
-  if (tb_init() != TB_OK) {
+  if (tb_init() != TB_OK)
+  {
     printf("Failed to initialize termbox\n");
     return 0;
   }
@@ -43,7 +45,8 @@ int init_scr(int selStyle, int *maxX, int *maxY, short arcadeMode,
   else
     minY_ = (rows - maxY_) / 2;
 
-  if (arcadeMode) {
+  if (arcadeMode)
+  {
     minX_ = (cols - 60) / 2;
     minY_ = (rows - 24) / 2;
     maxX_ = 30;
@@ -52,7 +55,8 @@ int init_scr(int selStyle, int *maxX, int *maxY, short arcadeMode,
     drawWalls = 1;
   }
 
-  if (cols < maxX_ * 2 || rows < maxY_) {
+  if (cols < maxX_ * 2 || rows < maxY_)
+  {
     tb_shutdown();
     if (arcadeMode)
       printf("The arcade mode requires a minimum of 64 columns by 22 rows\n");
@@ -72,12 +76,14 @@ int init_scr(int selStyle, int *maxX, int *maxY, short arcadeMode,
 // this funtion only draws the head and deletes the tail
 // the rest of the body is not redraw unless the fancy or ascii mode are active
 // in that case the head and the second section of the body are draw
-void draw_snake(Snake *snake) {
+void draw_snake(Snake *snake)
+{
   SnakePart *sPart = snake->head;
   SnakePart *sPart2 = snake->tail;
 
   // deletes last point where the tail was
-  if (tailLastPoint.x != sPart2->x || tailLastPoint.y != sPart2->y) {
+  if (tailLastPoint.x != sPart2->x || tailLastPoint.y != sPart2->y)
+  {
 
     if (tailLastPoint.x != -1 && tailLastPoint.y != -1)
       draw_point(tailLastPoint.x, tailLastPoint.y, 0, 7);
@@ -85,7 +91,8 @@ void draw_snake(Snake *snake) {
     tailLastPoint.y = sPart2->y;
   }
 
-  switch (selectedStyle) {
+  switch (selectedStyle)
+  {
   case ASCII:
     // draw the head
     draw_point(sPart->x, sPart->y, 0, 9);
@@ -96,19 +103,27 @@ void draw_snake(Snake *snake) {
     break;
   case FANCY:
     // draw the head
-    if (sPart->next->x == sPart->x + 1 && sPart->next->y == sPart->y) {
+    if (sPart->next->x == sPart->x + 1 && sPart->next->y == sPart->y)
+    {
       draw_point(sPart->x, sPart->y, 0, 2);
-    } else if (sPart->next->x == sPart->x - 1 && sPart->next->y == sPart->y) {
+    }
+    else if (sPart->next->x == sPart->x - 1 && sPart->next->y == sPart->y)
+    {
 
       draw_point(sPart->x, sPart->y, 0, 1);
-    } else if (sPart->next->x == sPart->x && sPart->next->y == sPart->y + 1) {
+    }
+    else if (sPart->next->x == sPart->x && sPart->next->y == sPart->y + 1)
+    {
       draw_point(sPart->x, sPart->y, 0, 3);
-    } else if (sPart->next->x == sPart->x && sPart->next->y == sPart->y - 1) {
+    }
+    else if (sPart->next->x == sPart->x && sPart->next->y == sPart->y - 1)
+    {
 
       draw_point(sPart->x, sPart->y, 0, 1);
     }
 
-    if (snake->teleport) {
+    if (snake->teleport)
+    {
       if ((sPart->next->x == 0 && sPart->x == maxX_ - 1 &&
            sPart->next->y == sPart->y) ||
           (sPart->next->x == maxX_ - 1 && sPart->x == 0 &&
@@ -116,51 +131,73 @@ void draw_snake(Snake *snake) {
           (sPart->next->x == sPart->x && sPart->next->y == 0 &&
            sPart->y == maxY_ - 1) ||
           (sPart->next->x == sPart->x && sPart->next->y == maxY_ - 1 &&
-           sPart->y == 0)) {
+           sPart->y == 0))
+      {
         draw_point(sPart->x, sPart->y, 0, 1);
       }
     }
 
     // draw the tail
-    if (sPart2->prev->x == sPart2->x + 1 && sPart2->prev->y == sPart2->y) {
+    if (sPart2->prev->x == sPart2->x + 1 && sPart2->prev->y == sPart2->y)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 2);
-    } else if (sPart2->prev->x == sPart2->x - 1 &&
-               sPart2->prev->y == sPart2->y) {
+    }
+    else if (sPart2->prev->x == sPart2->x - 1 &&
+             sPart2->prev->y == sPart2->y)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 1);
-    } else if (sPart2->prev->x == sPart2->x &&
-               sPart2->prev->y == sPart2->y + 1) {
+    }
+    else if (sPart2->prev->x == sPart2->x &&
+             sPart2->prev->y == sPart2->y + 1)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 3);
-    } else if (sPart2->prev->x == sPart2->x &&
-               sPart2->prev->y == sPart2->y - 1) {
+    }
+    else if (sPart2->prev->x == sPart2->x &&
+             sPart2->prev->y == sPart2->y - 1)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 1);
     }
     // draw the second section of the body
-    if (snake->length > 2) {
+    if (snake->length > 2)
+    {
       SnakePart *sPart3 = sPart->next;
       if (sPart3->prev->x == sPart3->x + 1 && sPart3->prev->y == sPart3->y &&
-          sPart3->next->x == sPart3->x && sPart3->next->y == sPart3->y + 1) {
+          sPart3->next->x == sPart3->x && sPart3->next->y == sPart3->y + 1)
+      {
 
         draw_point(sPart3->x, sPart3->y, 0, 4);
-      } else if (sPart3->prev->x == sPart3->x &&
-                 sPart3->prev->y == sPart3->y + 1 &&
-                 sPart3->next->x == sPart3->x + 1 &&
-                 sPart3->next->y == sPart3->y) {
+      }
+      else if (sPart3->prev->x == sPart3->x &&
+               sPart3->prev->y == sPart3->y + 1 &&
+               sPart3->next->x == sPart3->x + 1 &&
+               sPart3->next->y == sPart3->y)
+      {
 
         draw_point(sPart3->x, sPart3->y, 0, 4);
-      } else if (sPart3->prev->x == sPart3->x + 1 &&
-                 sPart3->prev->y == sPart3->y) {
+      }
+      else if (sPart3->prev->x == sPart3->x + 1 &&
+               sPart3->prev->y == sPart3->y)
+      {
         draw_point(sPart3->x, sPart3->y, 0, 2);
-      } else if (sPart3->prev->x == sPart3->x &&
-                 sPart3->prev->y == sPart3->y + 1) {
+      }
+      else if (sPart3->prev->x == sPart3->x &&
+               sPart3->prev->y == sPart3->y + 1)
+      {
         draw_point(sPart3->x, sPart3->y, 0, 3);
-      } else if (sPart3->next->x == sPart3->x + 1 &&
-                 sPart3->next->y == sPart3->y) {
+      }
+      else if (sPart3->next->x == sPart3->x + 1 &&
+               sPart3->next->y == sPart3->y)
+      {
 
         draw_point(sPart3->x, sPart3->y, 0, 2);
-      } else if (sPart3->next->x == sPart3->x &&
-                 sPart3->next->y == sPart3->y + 1) {
+      }
+      else if (sPart3->next->x == sPart3->x &&
+               sPart3->next->y == sPart3->y + 1)
+      {
         draw_point(sPart3->x, sPart3->y, 0, 3);
-      } else {
+      }
+      else
+      {
         draw_point(sPart3->x, sPart3->y, 0, 1);
       }
     }
@@ -169,16 +206,23 @@ void draw_snake(Snake *snake) {
     // Draw the head
     draw_point(sPart->x, sPart->y, 0, 0);
     // The tail is drawn like a half block to avoid the Ouroboros.
-    if (sPart2->prev->x == sPart2->x + 1 && sPart2->prev->y == sPart2->y) {
+    if (sPart2->prev->x == sPart2->x + 1 && sPart2->prev->y == sPart2->y)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 6);
-    } else if (sPart2->prev->x == sPart2->x - 1 &&
-               sPart2->prev->y == sPart2->y) {
+    }
+    else if (sPart2->prev->x == sPart2->x - 1 &&
+             sPart2->prev->y == sPart2->y)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 3);
-    } else if (sPart2->prev->x == sPart2->x &&
-               sPart2->prev->y == sPart2->y + 1) {
+    }
+    else if (sPart2->prev->x == sPart2->x &&
+             sPart2->prev->y == sPart2->y + 1)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 5);
-    } else if (sPart2->prev->x == sPart2->x &&
-               sPart2->prev->y == sPart2->y - 1) {
+    }
+    else if (sPart2->prev->x == sPart2->x &&
+             sPart2->prev->y == sPart2->y - 1)
+    {
       draw_point(sPart2->x, sPart2->y, 0, 2);
     }
     break;
@@ -190,10 +234,13 @@ void draw_snake(Snake *snake) {
     break;
   }
 }
-void draw_food(Point food) {
+void draw_food(Point food)
+{
 
-  if ((foodLastPoint.x != food.x || foodLastPoint.y != food.y) && food.x >= 0) {
-    switch (selectedStyle) {
+  if ((foodLastPoint.x != food.x || foodLastPoint.y != food.y) && food.x >= 0)
+  {
+    switch (selectedStyle)
+    {
     case ASCII:
       draw_point(food.x, food.y, 2, 11);
       break;
@@ -210,10 +257,13 @@ void draw_food(Point food) {
     foodLastPoint.y = food.y;
   }
 }
-void draw_junk(List *junkList) {
-  for (Node *it = junkList->first; it != NULL; it = it->next) {
+void draw_junk(List *junkList)
+{
+  for (Node *it = junkList->first; it != NULL; it = it->next)
+  {
     Point *jpoint = (Point *)it->data;
-    switch (selectedStyle) {
+    switch (selectedStyle)
+    {
 
     case ASCII:
       draw_point(jpoint->x, jpoint->y, 3, 10);
@@ -256,48 +306,119 @@ void draw_junk(List *junkList) {
   ▀▀▀▀█
   █▀▀▀▀ █
   ▀▀▀▀▀▀▀
-  This is the "sexy" part in the name sssnake!!!.
+  This is the "sexy" part in the name snakeai!!!.
 
 */
 
-void draw_point(int x, int y, short color, int type) {
+void draw_point(int x, int y, short color, int type)
+{
   int ty = y + minY_;
   int tx = 2 * x + minX_;
   if (tx >= tb_width() || tx < 0 || ty >= tb_height() || ty < 0)
     return;
 
   uintattr_t fg;
-  switch (color) {
-  case 2:  fg = TB_GREEN;   break;
-  case 3:  fg = TB_RED;     break;
-  case 5:  fg = TB_YELLOW;  break;
-  default: fg = TB_DEFAULT; break;
+  switch (color)
+  {
+  case 2:
+    fg = TB_GREEN;
+    break;
+  case 3:
+    fg = TB_RED;
+    break;
+  case 5:
+    fg = TB_YELLOW;
+    break;
+  default:
+    fg = TB_DEFAULT;
+    break;
   }
   uintattr_t bg = TB_DEFAULT;
 
   uint32_t ch1, ch2;
   int bold = 0;
 
-  switch (type) {
-  case 0:  ch1 = 0x2588; ch2 = 0x2588; break; /* ██ */
-  case 1:  ch1 = 0x2580; ch2 = ' ';    break; /* ▀  */
-  case 2:  ch1 = 0x2580; ch2 = 0x2580; break; /* ▀▀ */
-  case 3:  ch1 = 0x2588; ch2 = ' ';    break; /* █  */
-  case 4:  ch1 = 0x2588; ch2 = 0x2580; break; /* █▀ */
-  case 5:  ch1 = 0x2584; ch2 = 0x2584; break; /* ▄▄ */
-  case 6:  ch1 = ' ';    ch2 = 0x2588; break; /*  █ */
-  case 7:  ch1 = ' ';    ch2 = ' ';    break; /* erase */
-  case 8:  ch1 = 'o';    ch2 = ' ';    bold = 1; break;
-  case 9:  ch1 = '@';    ch2 = ' ';    bold = 1; break;
-  case 10: ch1 = 'x';    ch2 = ' ';    bold = 1; break;
-  case 11: ch1 = '8';    ch2 = ' ';    bold = 1; break;
-  case 12: ch1 = '-';    ch2 = '-';    break;
-  case 13: ch1 = '|';    ch2 = ' ';    break;
-  case 14: ch1 = ' ';    ch2 = '|';    break;
-  case 16: ch1 = 0x259A; ch2 = ' ';    break; /* ▚  */
-  case 17: ch1 = 0x259A; ch2 = 0x2580; break; /* ▚▀ */
-  case 18: ch1 = '.';    ch2 = ' ';    bold = 1; break;
-  default: return;
+  switch (type)
+  {
+  case 0:
+    ch1 = 0x2588;
+    ch2 = 0x2588;
+    break; /* ██ */
+  case 1:
+    ch1 = 0x2580;
+    ch2 = ' ';
+    break; /* ▀  */
+  case 2:
+    ch1 = 0x2580;
+    ch2 = 0x2580;
+    break; /* ▀▀ */
+  case 3:
+    ch1 = 0x2588;
+    ch2 = ' ';
+    break; /* █  */
+  case 4:
+    ch1 = 0x2588;
+    ch2 = 0x2580;
+    break; /* █▀ */
+  case 5:
+    ch1 = 0x2584;
+    ch2 = 0x2584;
+    break; /* ▄▄ */
+  case 6:
+    ch1 = ' ';
+    ch2 = 0x2588;
+    break; /*  █ */
+  case 7:
+    ch1 = ' ';
+    ch2 = ' ';
+    break; /* erase */
+  case 8:
+    ch1 = 'o';
+    ch2 = ' ';
+    bold = 1;
+    break;
+  case 9:
+    ch1 = '@';
+    ch2 = ' ';
+    bold = 1;
+    break;
+  case 10:
+    ch1 = 'x';
+    ch2 = ' ';
+    bold = 1;
+    break;
+  case 11:
+    ch1 = '8';
+    ch2 = ' ';
+    bold = 1;
+    break;
+  case 12:
+    ch1 = '-';
+    ch2 = '-';
+    break;
+  case 13:
+    ch1 = '|';
+    ch2 = ' ';
+    break;
+  case 14:
+    ch1 = ' ';
+    ch2 = '|';
+    break;
+  case 16:
+    ch1 = 0x259A;
+    ch2 = ' ';
+    break; /* ▚  */
+  case 17:
+    ch1 = 0x259A;
+    ch2 = 0x2580;
+    break; /* ▚▀ */
+  case 18:
+    ch1 = '.';
+    ch2 = ' ';
+    bold = 1;
+    break;
+  default:
+    return;
   }
 
   if (bold)
@@ -308,8 +429,10 @@ void draw_point(int x, int y, short color, int type) {
     tb_set_cell(tx + 1, ty, ch2, fg, bg);
 }
 
-void draw_score(Snake *snake) {
-  if (snakeSize != snake->length) {
+void draw_score(Snake *snake)
+{
+  if (snakeSize != snake->length)
+  {
     snakeSize = snake->length;
     char buf[32];
     snprintf(buf, sizeof(buf), "Size %i ", snake->length);
@@ -317,25 +440,32 @@ void draw_score(Snake *snake) {
   }
 }
 
-void draw_walls() {
-  switch (selectedStyle) {
+void draw_walls()
+{
+  switch (selectedStyle)
+  {
   case DOTS:
   case FULL:
   case FANCY:
-    if (drawScore || drawWalls) {
+    if (drawScore || drawWalls)
+    {
       for (int i = 0; i < maxX_; i++)
         draw_point(i, maxY_, 4, 2);
     }
-    if (drawWalls) {
-      for (int i = -1; i < maxX_ + 1; i++) {
+    if (drawWalls)
+    {
+      for (int i = -1; i < maxX_ + 1; i++)
+      {
         draw_point(i, -1, 4, 2);
       }
 
-      for (int i = 0; i < maxY_; i++) {
+      for (int i = 0; i < maxY_; i++)
+      {
         draw_point(-1, i, 4, 16);
       }
 
-      for (int i = -1; i < maxY_ + 1; i++) {
+      for (int i = -1; i < maxY_ + 1; i++)
+      {
         draw_point(maxX_, i, 4, 16);
       }
 
@@ -344,20 +474,25 @@ void draw_walls() {
     }
     break;
   case ASCII:
-    if (drawScore || drawWalls) {
+    if (drawScore || drawWalls)
+    {
       for (int i = 0; i < maxX_; i++)
         draw_point(i, maxY_, 4, 12);
     }
-    if (drawWalls) {
-      for (int i = -1; i < maxX_ + 1; i++) {
+    if (drawWalls)
+    {
+      for (int i = -1; i < maxX_ + 1; i++)
+      {
         draw_point(i, -1, 4, 12);
       }
 
-      for (int i = -1; i < maxY_ + 1; i++) {
+      for (int i = -1; i < maxY_ + 1; i++)
+      {
         draw_point(-1, i, 4, 14);
       }
 
-      for (int i = -1; i < maxY_ + 1; i++) {
+      for (int i = -1; i < maxY_ + 1; i++)
+      {
         draw_point(maxX_, i, 4, 13);
       }
     }
